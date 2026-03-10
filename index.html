@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>After Paris</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-neutral-100 text-neutral-900">
+    <div id="app"></div>
+
+    <script>
+      const days = [
+        {
+          day: 1,
+          label: "Incheon",
+          x: 40,
+          y: 20,
+          note: "Trip begins",
+          schedule: ["인천 도착", "카페 들르기", "월미도 or 송도 산책"],
+          food: ["차이나타운", "해물칼국수", "바다 보이는 카페"],
+          stay: "인천 시내 호텔 또는 송도 숙소",
+          photo:
+            "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80",
+        },
+        {
+          day: 2,
+          label: "Sokcho",
+          x: 78,
+          y: 20,
+          note: "East coast drive",
+          schedule: ["속초 이동", "중앙시장", "바다 산책"],
+          food: ["속초 닭강정", "오징어순대", "물회"],
+          stay: "속초 해변 근처 숙소",
+          photo:
+            "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80",
+        },
+        {
+          day: 3,
+          label: "Andong · Ulsan",
+          x: 72,
+          y: 48,
+          note: "Two-city day",
+          schedule: ["안동 들르기", "울산으로 이동", "야경 보기"],
+          food: ["안동찜닭", "간고등어", "울산 바다 근처 식당"],
+          stay: "울산 시내 숙소",
+          photo:
+            "https://images.unsplash.com/photo-1493246507139-91e8fad9978e?auto=format&fit=crop&w=1200&q=80",
+        },
+        {
+          day: 4,
+          label: "Busan",
+          x: 79,
+          y: 76,
+          note: "Ocean + city",
+          schedule: ["부산 이동", "해운대", "광안리 야경"],
+          food: ["돼지국밥", "밀면", "회"],
+          stay: "광안리 또는 해운대 숙소",
+          photo:
+            "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80",
+        },
+        {
+          day: 5,
+          label: "Yeosu",
+          x: 62,
+          y: 78,
+          note: "Night sea",
+          schedule: ["여수 이동", "해상 케이블카", "밤바다 보기"],
+          food: ["게장", "서대회", "해산물"],
+          stay: "여수 바다뷰 숙소",
+          photo:
+            "https://images.unsplash.com/photo-1519046904884-53103b34b206?auto=format&fit=crop&w=1200&q=80",
+        },
+        {
+          day: 6,
+          label: "Haenam",
+          x: 46,
+          y: 89,
+          note: "Southern coast",
+          schedule: ["해남 이동", "땅끝마을", "드라이브"],
+          food: ["한정식", "낙지요리", "남도 백반"],
+          stay: "해남 또는 근처 한옥/펜션",
+          photo:
+            "https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&w=1200&q=80",
+        },
+        {
+          day: 7,
+          label: "Mokpo",
+          x: 40,
+          y: 82,
+          note: "Harbor city",
+          schedule: ["목포 이동", "유달산", "항구 산책"],
+          food: ["세발낙지", "홍어삼합", "해산물"],
+          stay: "목포역 or 항구 근처 숙소",
+          photo:
+            "https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1200&q=80",
+        },
+        {
+          day: 8,
+          label: "Jeonju",
+          x: 49,
+          y: 56,
+          note: "Hanok vibes",
+          schedule: ["전주 이동", "한옥마을", "저녁 산책"],
+          food: ["전주비빔밥", "한옥마을 길거리 음식", "콩나물국밥"],
+          stay: "전주 한옥스테이 or 시내 숙소",
+          photo:
+            "https://images.unsplash.com/photo-1501594907352-04cda38ebc29?auto=format&fit=crop&w=1200&q=80",
+        },
+        {
+          day: 9,
+          label: "Boryeong",
+          x: 35,
+          y: 46,
+          note: "West coast stop",
+          schedule: ["보령 이동", "대천해수욕장", "노을 보기"],
+          food: ["조개구이", "해물칼국수", "횟집"],
+          stay: "대천해수욕장 근처 숙소",
+          photo:
+            "https://images.unsplash.com/photo-1500375592092-40eb2168fd21?auto=format&fit=crop&w=1200&q=80",
+        },
+        {
+          day: 10,
+          label: "Suwon",
+          x: 44,
+          y: 28,
+          note: "Final stop",
+          schedule: ["수원 이동", "화성 산책", "마무리 저녁"],
+          food: ["수원왕갈비", "통닭거리", "카페"],
+          stay: "수원역 or 행궁동 숙소",
+          photo:
+            "https://images.unsplash.com/photo-1493558103817-58b2924bce98?auto=format&fit=crop&w=1200&q=80",
+        },
+      ];
+
+      let selectedDay = 1;
+
+      function createMapLabels() {
+        return days
+          .map(
+            (item) => `
+              <g>
+                <circle
+                  cx="${item.x}"
+                  cy="${item.y}"
+                  r="${selectedDay >= item.day ? 2.2 : 1.7}"
+                  fill="${selectedDay >= item.day ? "#171717" : "#a3a3a3"}"
+                />
+                <text x="${item.x + 2.5}" y="${item.y - 2.6}" font-size="3" fill="#404040">
+                  ${item.label}
+                </text>
+              </g>
+            `
+          )
+          .join("");
+      }
+
+      function createDayButtons() {
+        return days
+          .map(
+            (item) => `
+              <button
+                onclick="selectDay(${item.day})"
+                class="shrink-0 rounded-full border px-4 py-2 text-sm font-medium transition ${
+                  selectedDay === item.day
+                    ? "border-neutral-900 bg-neutral-900 text-white shadow-sm"
+                    : "border-neutral-300 bg-white text-neutral-700"
+                }"
+              >
+                Day ${item.day}
+              </button>
+            `
+          )
+          .join("");
+      }
+
+      function createRouteOverview() {
+        return days
+          .map(
+            (item) => `
+              <button
+                onclick="selectDay(${item.day})"
+                class="flex w-full items-center justify-between rounded-2xl border px-4 py-3 text-left transition ${
+                  item.day === selectedDay
+                    ? "border-neutral-900 bg-neutral-900 text-white"
+                    : item.day < selectedDay
+                    ? "border-neutral-300 bg-neutral-100 text-neutral-800"
+                    : "border-neutral-200 bg-white text-neutral-700"
+                }"
+              >
+                <span class="font-medium">Day ${item.day}</span>
+                <span class="text-sm opacity-80">${item.label}</span>
+              </button>
+            `
+          )
+          .join("");
+      }
+
+      function render() {
+        const activeStop = days.find((item) => item.day === selectedDay);
+        const routePoints = days.map((item) => `${item.x},${item.y}`).join(" ");
+
+        document.getElementById("app").innerHTML = `
+          <div class="mx-auto w-full max-w-md min-h-screen px-4 pt-5 pb-8">
+            <div class="mb-5">
+              <p class="text-[10px] tracking-[0.35em] uppercase text-neutral-500 mb-2">Korea Road Trip</p>
+              <h1 class="text-3xl font-semibold tracking-tight">After Paris</h1>
+              <p class="mt-2 text-sm leading-relaxed text-neutral-600 pr-2">
+                전국 로드트립 플랜. Day를 누르면 자동차가 다음 지역으로 부드럽게 이동해.
+              </p>
+            </div>
+
+            <div class="mb-4 -mx-1 overflow-x-auto pb-1">
+              <div class="flex gap-2 px-1 min-w-max">
+                ${createDayButtons()}
+              </div>
+            </div>
+
+            <div class="space-y-4">
+              <div class="rounded-[28px] border border-neutral-200 bg-white p-4 shadow-sm">
+                <div class="mb-3 flex items-start justify-between gap-3">
+                  <div>
+                    <h2 class="text-lg font-semibold">Trip Map</h2>
+                    <p class="text-sm text-neutral-500">Day ${activeStop.day} · ${activeStop.label}</p>
+                  </div>
+                  <div class="rounded-full border border-neutral-200 bg-neutral-100 px-3 py-1 text-[11px] text-neutral-600">
+                    Mobile
+                  </div>
+                </div>
+
+                <div class="relative overflow-hidden rounded-[24px] border border-neutral-200 bg-neutral-50 aspect-[9/13]">
+                  <svg viewBox="0 0 100 110" class="absolute inset-0 h-full w-full">
+                    <defs>
+                      <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+                        <feDropShadow dx="0" dy="1" stdDeviation="1.5" flood-opacity="0.18" />
+                      </filter>
+                    </defs>
+
+                    <rect x="0" y="0" width="100" height="110" fill="#f5f5f5" />
+
+                    <path
+                      d="M47 6 C57 8, 67 13, 73 22 C78 30, 83 38, 82 47 C81 56, 86 63, 84 71 C82 80, 75 87, 66 91 C58 95, 53 98, 44 97 C35 96, 30 89, 26 80 C22 72, 20 65, 22 56 C24 48, 23 43, 26 35 C29 26, 36 19, 40 13 C42 10, 44 8, 47 6 Z"
+                      fill="#e5e5e5"
+                      stroke="#a3a3a3"
+                      stroke-width="1.2"
+                      filter="url(#softShadow)"
+                    />
+
+                    <polyline
+                      points="${routePoints}"
+                      fill="none"
+                      stroke="#737373"
+                      stroke-width="1.4"
+                      stroke-dasharray="3 2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      opacity="0.8"
+                    />
+
+                    ${createMapLabels()}
+                  </svg>
+
+                  <div
+                    class="absolute z-10 transition-all duration-700 ease-in-out"
+                    style="left:${activeStop.x}%; top:${activeStop.y}%; transform: translate(-50%, -50%);"
+                  >
+                    <div class="relative h-8 w-8">
+                      <svg viewBox="0 0 24 24" class="h-8 w-8 drop-shadow-sm">
+                        <path d="M5 13h14l-1.2-3.3c-.3-.9-1.1-1.5-2-1.5H8.2c-.9 0-1.7.6-2 1.5L5 13Z" fill="#171717" />
+                        <rect x="4" y="13" width="16" height="4" rx="1.5" fill="#262626" />
+                        <circle cx="7" cy="18" r="1.8" fill="#171717" />
+                        <circle cx="17" cy="18" r="1.8" fill="#171717" />
+                        <circle cx="7" cy="18" r="0.7" fill="#fafafa" />
+                        <circle cx="17" cy="18" r="0.7" fill="#fafafa" />
+                        <rect x="9" y="9.5" width="6" height="2.2" rx="0.5" fill="#fafafa" opacity="0.95" />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="rounded-[28px] border border-neutral-200 bg-white p-5 shadow-sm overflow-hidden">
+                <div class="mb-3 flex items-center justify-between gap-3">
+                  <div>
+                    <p class="text-[10px] uppercase tracking-[0.3em] text-neutral-500 mb-1">Current Stop</p>
+                    <h3 class="text-2xl font-semibold">Day ${activeStop.day}</h3>
+                    <p class="text-base text-neutral-800">${activeStop.label}</p>
+                  </div>
+                  <div class="rounded-2xl bg-neutral-100 px-3 py-2 text-xs text-neutral-600 text-right max-w-[120px]">
+                    ${activeStop.note}
+                  </div>
+                </div>
+
+                <div class="mb-4 overflow-hidden rounded-2xl border border-neutral-200 aspect-[4/3] bg-neutral-100">
+                  <img src="${activeStop.photo}" alt="${activeStop.label}" class="h-full w-full object-cover" />
+                </div>
+
+                <div class="space-y-4">
+                  <div>
+                    <h4 class="text-sm font-semibold mb-2">일정</h4>
+                    <div class="space-y-2">
+                      ${activeStop.schedule
+                        .map(
+                          (item) => `
+                            <div class="rounded-2xl border border-neutral-200 bg-neutral-50 px-4 py-3 text-sm text-neutral-700">
+                              ${item}
+                            </div>
+                          `
+                        )
+                        .join("")}
+                    </div>
+                  </div>
+
+                  <div>
+                    <h4 class="text-sm font-semibold mb-2">맛집</h4>
+                    <div class="flex flex-wrap gap-2">
+                      ${activeStop.food
+                        .map(
+                          (item) => `
+                            <span class="rounded-full border border-neutral-300 bg-white px-3 py-2 text-xs text-neutral-700">
+                              ${item}
+                            </span>
+                          `
+                        )
+                        .join("")}
+                    </div>
+                  </div>
+
+                  <div>
+                    <h4 class="text-sm font-semibold mb-2">숙소</h4>
+                    <div class="rounded-2xl border border-neutral-200 bg-neutral-50 px-4 py-3 text-sm text-neutral-700">
+                      ${activeStop.stay}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="rounded-[28px] border border-neutral-200 bg-white p-4 shadow-sm">
+                <p class="mb-3 text-[10px] uppercase tracking-[0.3em] text-neutral-500">Route Overview</p>
+                <div class="space-y-2">
+                  ${createRouteOverview()}
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      function selectDay(day) {
+        selectedDay = day;
+        render();
+      }
+
+      render();
+    </script>
+  </body>
+</html>
